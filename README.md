@@ -1,6 +1,6 @@
-# Series Tracker API
+# Courses Tracker API
 
-Backend REST API para el proyecto **Course Tracker**.  
+Backend REST API para el proyecto **Courses Tracker**.  
 Este servidor expone endpoints JSON para administrar cursos y será consumido por un cliente hecho con HTML, CSS y JavaScript vanilla.
 
 ## Tecnologías
