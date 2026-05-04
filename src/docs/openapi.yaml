@@ -1,0 +1,528 @@
+openapi: 3.0.3
+info:
+  title: Courses Tracker API
+  version: 1.0.0
+  description: |
+    REST API para administrar cursos en el proyecto Courses Tracker.
+    El servidor responde JSON y es consumido por un cliente hecho con HTML, CSS y JavaScript vanilla.
+
+servers:
+  - url: http://localhost:3000
+    description: Local development server
+
+tags:
+  - name: Health
+    description: Verificacion rapida del estado del servidor
+  - name: Courses
+    description: Operaciones CRUD para cursos
+
+paths:
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Check server health
+      operationId: getHealth
+      responses:
+        '200':
+          description: Server is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+              examples:
+                default:
+                  value:
+                    status: ok
+                    timestamp: '2026-05-04T18:30:00.000Z'
+
+  /courses:
+    get:
+      tags:
+        - Courses
+      summary: List courses
+      operationId: listCourses
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - $ref: '#/components/parameters/SearchParam'
+        - $ref: '#/components/parameters/SortParam'
+        - $ref: '#/components/parameters/OrderParam'
+      responses:
+        '200':
+          description: Courses retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseListResponse'
+              examples:
+                default:
+                  value:
+                    data:
+                      - id: 1
+                        title: JavaScript Fundamentals
+                        instructor: Mosh Hamedani
+                        platform: Udemy
+                        category: Web Development
+                        level: beginner
+                        price: 19.99
+                        duration_hours: 12
+                        description: Aprende los fundamentos de JavaScript desde cero.
+                        image_url: /uploads/javascript-fundamentals.webp
+                        created_at: '2026-05-04T18:00:00.000Z'
+                        updated_at: '2026-05-04T18:00:00.000Z'
+                    meta:
+                      page: 1
+                      limit: 10
+                      total: 1
+                      totalPages: 1
+        '400':
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalidQuery:
+                  value:
+                    error:
+                      message: Invalid query parameters
+                      details:
+                        - field: sort
+                          message: sort must be one of title, price, created_at, level
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      tags:
+        - Courses
+      summary: Create a new course
+      operationId: createCourse
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CourseCreateInput'
+            examples:
+              default:
+                value:
+                  title: React for Beginners
+                  instructor: Angela Yu
+                  platform: Udemy
+                  category: Frontend
+                  level: beginner
+                  price: 24.99
+                  duration_hours: 18
+                  description: Curso introductorio para construir interfaces modernas.
+                  image_url: /uploads/react-for-beginners.webp
+      responses:
+        '201':
+          description: Course created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseResponse'
+              examples:
+                default:
+                  value:
+                    data:
+                      id: 2
+                      title: React for Beginners
+                      instructor: Angela Yu
+                      platform: Udemy
+                      category: Frontend
+                      level: beginner
+                      price: 24.99
+                      duration_hours: 18
+                      description: Curso introductorio para construir interfaces modernas.
+                      image_url: /uploads/react-for-beginners.webp
+                      created_at: '2026-05-04T18:45:00.000Z'
+                      updated_at: '2026-05-04T18:45:00.000Z'
+        '400':
+          description: Invalid request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                validationError:
+                  value:
+                    error:
+                      message: Validation failed
+                      details:
+                        - field: title
+                          message: title must be at least 3 characters long
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /courses/{courseId}:
+    get:
+      tags:
+        - Courses
+      summary: Get a course by ID
+      operationId: getCourseById
+      parameters:
+        - $ref: '#/components/parameters/CourseIdParam'
+      responses:
+        '200':
+          description: Course retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      tags:
+        - Courses
+      summary: Update an existing course
+      operationId: updateCourse
+      parameters:
+        - $ref: '#/components/parameters/CourseIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CourseUpdateInput'
+            examples:
+              default:
+                value:
+                  title: Advanced React Patterns
+                  instructor: Kent C. Dodds
+                  platform: Frontend Masters
+                  category: Frontend
+                  level: advanced
+                  price: 39.99
+                  duration_hours: 10
+                  description: Profundiza en composicion, hooks y arquitectura de componentes.
+                  image_url: /uploads/advanced-react-patterns.webp
+      responses:
+        '200':
+          description: Course updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseResponse'
+        '400':
+          description: Invalid request body or invalid course ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags:
+        - Courses
+      summary: Delete a course
+      operationId: deleteCourse
+      parameters:
+        - $ref: '#/components/parameters/CourseIdParam'
+      responses:
+        '204':
+          description: Course deleted successfully
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  parameters:
+    CourseIdParam:
+      name: courseId
+      in: path
+      required: true
+      description: Numeric course identifier
+      schema:
+        type: integer
+        format: int64
+        minimum: 1
+    PageParam:
+      name: page
+      in: query
+      required: false
+      description: Page number starting at 1
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    LimitParam:
+      name: limit
+      in: query
+      required: false
+      description: Number of records per page
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 10
+    SearchParam:
+      name: q
+      in: query
+      required: false
+      description: Search courses by title
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 120
+    SortParam:
+      name: sort
+      in: query
+      required: false
+      description: Field used for sorting
+      schema:
+        type: string
+        enum:
+          - title
+          - price
+          - created_at
+          - level
+        default: created_at
+    OrderParam:
+      name: order
+      in: query
+      required: false
+      description: Sort direction
+      schema:
+        type: string
+        enum:
+          - asc
+          - desc
+        default: desc
+
+  schemas:
+    HealthResponse:
+      type: object
+      required:
+        - status
+        - timestamp
+      properties:
+        status:
+          type: string
+          example: ok
+        timestamp:
+          type: string
+          format: date-time
+
+    Course:
+      type: object
+      required:
+        - id
+        - title
+        - instructor
+        - platform
+        - level
+        - price
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        title:
+          type: string
+          minLength: 3
+          maxLength: 120
+          example: JavaScript Fundamentals
+        instructor:
+          type: string
+          minLength: 3
+          maxLength: 100
+          example: Mosh Hamedani
+        platform:
+          type: string
+          minLength: 2
+          maxLength: 60
+          example: Udemy
+        category:
+          type: string
+          nullable: true
+          maxLength: 60
+          example: Web Development
+        level:
+          type: string
+          enum:
+            - beginner
+            - intermediate
+            - advanced
+          example: beginner
+        price:
+          type: number
+          format: float
+          minimum: 0
+          example: 19.99
+        duration_hours:
+          type: integer
+          nullable: true
+          minimum: 1
+          example: 12
+        description:
+          type: string
+          nullable: true
+          example: Aprende los fundamentos de JavaScript desde cero.
+        image_url:
+          type: string
+          nullable: true
+          format: uri-reference
+          example: /uploads/javascript-fundamentals.webp
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    CourseCreateInput:
+      type: object
+      required:
+        - title
+        - instructor
+        - platform
+        - level
+        - price
+      properties:
+        title:
+          type: string
+          minLength: 3
+          maxLength: 120
+        instructor:
+          type: string
+          minLength: 3
+          maxLength: 100
+        platform:
+          type: string
+          minLength: 2
+          maxLength: 60
+        category:
+          type: string
+          maxLength: 60
+        level:
+          type: string
+          enum:
+            - beginner
+            - intermediate
+            - advanced
+        price:
+          type: number
+          format: float
+          minimum: 0
+        duration_hours:
+          type: integer
+          minimum: 1
+        description:
+          type: string
+        image_url:
+          type: string
+          format: uri-reference
+      additionalProperties: false
+
+    CourseUpdateInput:
+      allOf:
+        - $ref: '#/components/schemas/CourseCreateInput'
+
+    CourseResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/Course'
+
+    CourseListResponse:
+      type: object
+      required:
+        - data
+        - meta
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Course'
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+
+    PaginationMeta:
+      type: object
+      required:
+        - page
+        - limit
+        - total
+        - totalPages
+      properties:
+        page:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 10
+        total:
+          type: integer
+          example: 42
+        totalPages:
+          type: integer
+          example: 5
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - message
+          properties:
+            message:
+              type: string
+              example: Validation failed
+            details:
+              type: array
+              items:
+                $ref: '#/components/schemas/ErrorDetail'
+
+    ErrorDetail:
+      type: object
+      required:
+        - field
+        - message
+      properties:
+        field:
+          type: string
+          example: title
+        message:
+          type: string
+          example: title must be at least 3 characters long
+
+  responses:
+    NotFoundError:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            default:
+              value:
+                error:
+                  message: Course not found
+
+    InternalServerError:
+      description: Unexpected server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            default:
+              value:
+                error:
+                  message: Internal server error
