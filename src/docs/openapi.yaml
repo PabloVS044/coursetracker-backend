@@ -67,6 +67,8 @@ paths:
                         level: beginner
                         price: 19.99
                         duration_hours: 12
+                        lessons: 32
+                        language: English
                         description: Aprende los fundamentos de JavaScript desde cero.
                         image_url: /uploads/javascript-fundamentals.webp
                         created_at: '2026-05-04T18:00:00.000Z'
@@ -114,6 +116,8 @@ paths:
                   level: beginner
                   price: 24.99
                   duration_hours: 18
+                  lessons: 45
+                  language: English
                   description: Curso introductorio para construir interfaces modernas.
                   image_url: /uploads/react-for-beginners.webp
       responses:
@@ -135,6 +139,8 @@ paths:
                       level: beginner
                       price: 24.99
                       duration_hours: 18
+                      lessons: 45
+                      language: English
                       description: Curso introductorio para construir interfaces modernas.
                       image_url: /uploads/react-for-beginners.webp
                       created_at: '2026-05-04T18:45:00.000Z'
@@ -199,6 +205,8 @@ paths:
                   level: advanced
                   price: 39.99
                   duration_hours: 10
+                  lessons: 28
+                  language: English
                   description: Profundiza en composicion, hooks y arquitectura de componentes.
                   image_url: /uploads/advanced-react-patterns.webp
       responses:
@@ -321,6 +329,8 @@ components:
         - platform
         - level
         - price
+        - lessons
+        - language
         - created_at
         - updated_at
       properties:
@@ -365,6 +375,15 @@ components:
           nullable: true
           minimum: 1
           example: 12
+        lessons:
+          type: integer
+          minimum: 1
+          example: 32
+        language:
+          type: string
+          minLength: 2
+          maxLength: 40
+          example: English
         description:
           type: string
           nullable: true
@@ -389,6 +408,8 @@ components:
         - platform
         - level
         - price
+        - lessons
+        - language
       properties:
         title:
           type: string
@@ -418,6 +439,13 @@ components:
         duration_hours:
           type: integer
           minimum: 1
+        lessons:
+          type: integer
+          minimum: 1
+        language:
+          type: string
+          minLength: 2
+          maxLength: 40
         description:
           type: string
         image_url:
