@@ -7,6 +7,8 @@ CREATE TABLE IF NOT EXISTS courses (
     level VARCHAR(20) NOT NULL,
     price NUMERIC(10, 2) NOT NULL DEFAULT 0,
     duration_hours INTEGER,
+    lessons INTEGER NOT NULL,
+    language VARCHAR(40) NOT NULL,
     description TEXT,
     image_url TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -14,11 +16,13 @@ CREATE TABLE IF NOT EXISTS courses (
     CONSTRAINT courses_title_length CHECK (char_length(trim(title)) >= 3),
     CONSTRAINT courses_instructor_length CHECK (char_length(trim(instructor)) >= 3),
     CONSTRAINT courses_platform_length CHECK (char_length(trim(platform)) >= 2),
+    CONSTRAINT courses_language_length CHECK (char_length(trim(language)) >= 2),
     CONSTRAINT courses_level_valid CHECK (level IN ('beginner', 'intermediate', 'advanced')),
     CONSTRAINT courses_price_non_negative CHECK (price >= 0),
     CONSTRAINT courses_duration_positive CHECK (
         duration_hours IS NULL OR duration_hours > 0
-    )
+    ),
+    CONSTRAINT courses_lessons_positive CHECK (lessons > 0)
 );
 
 CREATE OR REPLACE FUNCTION set_updated_at()

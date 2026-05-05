@@ -7,6 +7,8 @@ const COURSE_COLUMNS = `
   level,
   price,
   duration_hours,
+  lessons,
+  language,
   description,
   image_url,
   created_at,
@@ -81,10 +83,12 @@ const createCourseQuery = `
     level,
     price,
     duration_hours,
+    lessons,
+    language,
     description,
     image_url
   )
-  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
   RETURNING ${COURSE_COLUMNS}
 `;
 
@@ -98,8 +102,10 @@ const updateCourseQuery = `
     level = $6,
     price = $7,
     duration_hours = $8,
-    description = $9,
-    image_url = $10
+    lessons = $9,
+    language = $10,
+    description = $11,
+    image_url = $12
   WHERE id = $1
   RETURNING ${COURSE_COLUMNS}
 `;

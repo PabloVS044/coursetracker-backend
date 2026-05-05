@@ -11,6 +11,8 @@ const ALLOWED_BODY_FIELDS = new Set([
   'level',
   'price',
   'duration_hours',
+  'lessons',
+  'language',
   'description',
   'image_url',
 ]);
@@ -163,6 +165,7 @@ function validateCourseBody(req, res, next) {
   const title = validateRequiredString('title', req.body.title, 3, 120, details);
   const instructor = validateRequiredString('instructor', req.body.instructor, 3, 100, details);
   const platform = validateRequiredString('platform', req.body.platform, 2, 60, details);
+  const language = validateRequiredString('language', req.body.language, 2, 40, details);
   const levelValue =
     typeof req.body.level === 'string' ? req.body.level.trim().toLowerCase() : req.body.level;
   const category = normalizeOptionalString(req.body.category, 60, 'category', details);
@@ -173,6 +176,8 @@ function validateCourseBody(req, res, next) {
     typeof req.body.duration_hours === 'string'
       ? req.body.duration_hours.trim()
       : req.body.duration_hours;
+  const rawLessons =
+    typeof req.body.lessons === 'string' ? req.body.lessons.trim() : req.body.lessons;
 
   if (typeof levelValue !== 'string' || !ALLOWED_LEVELS.has(levelValue)) {
     details.push({
@@ -202,6 +207,17 @@ function validateCourseBody(req, res, next) {
     }
   }
 
+  const lessons = Number(rawLessons);
+
+  if (rawLessons === undefined || rawLessons === null || rawLessons === '') {
+    details.push({ field: 'lessons', message: 'lessons is required' });
+  } else if (!Number.isInteger(lessons) || lessons < 1) {
+    details.push({
+      field: 'lessons',
+      message: 'lessons must be a positive integer',
+    });
+  }
+
   if (details.length > 0) {
     return next(createValidationError(details));
   }
@@ -214,6 +230,8 @@ function validateCourseBody(req, res, next) {
     level: levelValue,
     price,
     duration_hours: durationHours,
+    lessons,
+    language,
     description,
     image_url: imageUrl,
   };

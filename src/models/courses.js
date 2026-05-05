@@ -28,6 +28,8 @@ async function createCourse(course) {
     course.level,
     course.price,
     course.duration_hours,
+    course.lessons,
+    course.language,
     course.description,
     course.image_url,
   ]);
@@ -45,6 +47,8 @@ async function updateCourse(courseId, course) {
     course.level,
     course.price,
     course.duration_hours,
+    course.lessons,
+    course.language,
     course.description,
     course.image_url,
   ]);
