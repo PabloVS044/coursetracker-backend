@@ -65,6 +65,16 @@ Ese archivo crea:
 - el trigger para `updated_at`
 - índices básicos
 
+## Cargar datos de ejemplo
+
+Si quieres trabajar con cursos de prueba desde el inicio, ejecuta:
+
+```bash
+psql -h localhost -U postgres -d coursetracker -f src/db/seed.sql
+```
+
+Ese seed agrega cursos de ejemplo y evita duplicados básicos por título.
+
 ## Ejecutar el servidor
 
 Modo desarrollo:
