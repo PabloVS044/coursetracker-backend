@@ -16,7 +16,7 @@ El enunciado original del laboratorio habla de un *Series Tracker*; en esta impl
 
 
 ```md
-![Screenshot de Courses Tracker](./docs/ss.png)
+![Screenshot de Courses Tracker](docs/ss.png)
 ```
 
 ## Arquitectura
