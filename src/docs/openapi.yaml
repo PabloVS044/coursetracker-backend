@@ -13,6 +13,8 @@ servers:
 tags:
   - name: Health
     description: Verificacion rapida del estado del servidor
+  - name: Uploads
+    description: Carga de imagenes hacia Cloudinary
   - name: Courses
     description: Operaciones CRUD para cursos
 
@@ -34,6 +36,19 @@ paths:
                 default:
                   value:
                     status: ok
+                    database: ok
+                    timestamp: '2026-05-04T18:30:00.000Z'
+        '503':
+          description: Database is unreachable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+              examples:
+                default:
+                  value:
+                    status: error
+                    database: unreachable
                     timestamp: '2026-05-04T18:30:00.000Z'
 
   /courses:
@@ -70,7 +85,7 @@ paths:
                         lessons: 32
                         language: English
                         description: Aprende los fundamentos de JavaScript desde cero.
-                        image_url: /uploads/javascript-fundamentals.webp
+                        image_url: https://res.cloudinary.com/example-cloud/image/upload/v1715000000/coursetracker/javascript-fundamentals.webp
                         created_at: '2026-05-04T18:00:00.000Z'
                         updated_at: '2026-05-04T18:00:00.000Z'
                     meta:
@@ -119,7 +134,7 @@ paths:
                   lessons: 45
                   language: English
                   description: Curso introductorio para construir interfaces modernas.
-                  image_url: /uploads/react-for-beginners.webp
+                  image_url: https://res.cloudinary.com/example-cloud/image/upload/v1715000000/coursetracker/react-for-beginners.webp
       responses:
         '201':
           description: Course created successfully
@@ -142,7 +157,7 @@ paths:
                       lessons: 45
                       language: English
                       description: Curso introductorio para construir interfaces modernas.
-                      image_url: /uploads/react-for-beginners.webp
+                      image_url: https://res.cloudinary.com/example-cloud/image/upload/v1715000000/coursetracker/react-for-beginners.webp
                       created_at: '2026-05-04T18:45:00.000Z'
                       updated_at: '2026-05-04T18:45:00.000Z'
         '400':
@@ -208,7 +223,7 @@ paths:
                   lessons: 28
                   language: English
                   description: Profundiza en composicion, hooks y arquitectura de componentes.
-                  image_url: /uploads/advanced-react-patterns.webp
+                  image_url: https://res.cloudinary.com/example-cloud/image/upload/v1715000000/coursetracker/advanced-react-patterns.webp
       responses:
         '200':
           description: Course updated successfully
@@ -241,6 +256,54 @@ paths:
           $ref: '#/components/responses/NotFoundError'
         '500':
           $ref: '#/components/responses/InternalServerError'
+
+  /uploads/image:
+    post:
+      tags:
+        - Uploads
+      summary: Upload an image to Cloudinary
+      operationId: uploadCourseImage
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - image
+              properties:
+                image:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Image uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageUploadResponse'
+              examples:
+                default:
+                  value:
+                    data:
+                      url: https://res.cloudinary.com/example-cloud/image/upload/v1715000000/coursetracker/react-for-beginners.webp
+                      public_id: coursetracker/react-for-beginners-abc123
+                      original_filename: react-for-beginners
+                      width: 1280
+                      height: 720
+                      format: webp
+        '400':
+          description: Invalid image payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '424':
+          description: Cloudinary is unavailable or not configured
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
 components:
   parameters:
@@ -311,9 +374,13 @@ components:
       type: object
       required:
         - status
+        - database
         - timestamp
       properties:
         status:
+          type: string
+          example: ok
+        database:
           type: string
           example: ok
         timestamp:
@@ -392,13 +459,43 @@ components:
           type: string
           nullable: true
           format: uri-reference
-          example: /uploads/javascript-fundamentals.webp
+          example: https://res.cloudinary.com/example-cloud/image/upload/v1715000000/coursetracker/javascript-fundamentals.webp
         created_at:
           type: string
           format: date-time
         updated_at:
           type: string
           format: date-time
+
+    UploadedImage:
+      type: object
+      required:
+        - url
+        - public_id
+        - original_filename
+      properties:
+        url:
+          type: string
+          format: uri
+          example: https://res.cloudinary.com/example-cloud/image/upload/v1715000000/coursetracker/react-for-beginners.webp
+        public_id:
+          type: string
+          example: coursetracker/react-for-beginners-abc123
+        original_filename:
+          type: string
+          example: react-for-beginners
+        width:
+          type: integer
+          nullable: true
+          example: 1280
+        height:
+          type: integer
+          nullable: true
+          example: 720
+        format:
+          type: string
+          nullable: true
+          example: webp
 
     CourseCreateInput:
       type: object
@@ -477,6 +574,14 @@ components:
             $ref: '#/components/schemas/Course'
         meta:
           $ref: '#/components/schemas/PaginationMeta'
+
+    ImageUploadResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/UploadedImage'
 
     PaginationMeta:
       type: object
