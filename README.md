@@ -117,6 +117,25 @@ Modo normal:
 npm start
 ```
 
+## Desplegar en Vercel
+
+Este backend ya incluye una entrada serverless para Vercel en `api/index.js` y un `vercel.json` que reescribe todas las rutas hacia esa funcion.
+
+Antes de desplegar, configura estas variables en el proyecto de Vercel:
+
+- `DATABASE_URL`
+- `DATABASE_SSL`
+- `CORS_ORIGIN`
+- `CLOUDINARY_CLOUD_NAME`
+- `CLOUDINARY_API_KEY`
+- `CLOUDINARY_API_SECRET`
+- `CLOUDINARY_FOLDER`
+
+Notas:
+- En Vercel, `GET /` responde un resumen simple del servicio.
+- En Vercel, `GET /api-docs` no monta Swagger UI interactivo para evitar problemas con assets estaticos; usa `GET /openapi.json`.
+- Para probar el comportamiento real antes de desplegar, usa `vercel dev`.
+
 ## Endpoints principales
 
 - `GET /health`
