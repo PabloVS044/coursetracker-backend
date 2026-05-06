@@ -8,18 +8,15 @@ El enunciado original del laboratorio habla de un *Series Tracker*; en esta impl
 ## Links
 
 - Backend desplegado: `https://coursetracker-backend.vercel.app`
-- Frontend desplegado: `TODO: agrega aquí la URL del frontend publicado`
-- Repositorio del backend: `TODO: agrega aquí la URL del repo del backend`
-- Repositorio del frontend: `TODO: agrega aquí la URL del repo del frontend`
+- Frontend desplegado: `https://coursetracker-frontend.vercel.app/`
+- Repositorio del backend: `https://github.com/PabloVS044/coursetracker-backend`
+- Repositorio del frontend: `https://github.com/PabloVS044/coursetracker-frontend`
 
 ## Screenshot
 
-Agrega aquí antes de entregar un screenshot real de la aplicación funcionando.
-
-Ejemplo:
 
 ```md
-![Screenshot de Courses Tracker](./docs/coursetracker-screenshot.png)
+![Screenshot de Courses Tracker](./docs/ss.png)
 ```
 
 ## Arquitectura
